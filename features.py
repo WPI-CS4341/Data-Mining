@@ -7,19 +7,22 @@ import sys
 import os.path
 
 import numpy as np
+from detector import Detector
 
 DEBUG = 0
 BOARD_HEIGHT = 6
 BOARD_WIDTH = 7
 
-def parse_file(filename):
+
+def process_file(input_filename, output_filename):
     """Parse the input file as a board state"""
-    # Stores the board as a matrix
-    boards = []
 
     # Read each line and add to the examples and output lists
-    if os.path.isfile(filename):
-        with open(filename, 'rb') as csvfile:
+    if os.path.isfile(input_filename):
+        feature_headers = []
+        with open(input_filename, 'rb') as csvfile:
+            header = csvfile.readline()
+            output = header
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 # Initialize empty board matrix
@@ -34,7 +37,7 @@ def parse_file(filename):
 
                 # Iterate through the input data
                 for i in row:
-                    board_row.append(i)
+                    board_row.append(int(i))
                     # If we've filled a row, move onto the next one
                     if board_column == BOARD_HEIGHT - 1:
                         board.append(board_row)
@@ -46,51 +49,44 @@ def parse_file(filename):
 
                 # Add board to the collection of boards
                 board = np.flipud(np.array(board).T)
-                boards.append(board)
+
+                # Update feature headers (names)
+                features = Detector(board).allFeatures()
+                feature_headers = features.keys()
+
+                # Add line to output with feature values appended
+                output += ','.join(row) + ',' + winner + \
+                          ',' + ','.join(map(str, features.values())) + '\n'
+
+        # Will be used to get the first line of the file
+        first_newline = output.find('\n')
+
+        # Append new feature titles to header line
+        output = output[:first_newline][:-1] + ',' + \
+            ','.join(feature_headers) + \
+            output[first_newline:]
+
+        # Write the output to file
+        with open(output_filename, 'wb') as output_file:
+            output_file.write(output)
     else:
         # Throw error when cannot open file
         print("Input file does not exist.")
 
-    # Return the inputs and outputs
-    return np.array(boards)
 
 def main():
     # Read command line arguments
     args = sys.argv[1:]
     # More than 1 argument supplied
-    if len(args) > 0:
+    if len(args) > 1:
         # Get data filename
-        filename = args[0]
-        # Set default number of hidden nodes to 5
-        hidden_layer_size = 5
-        # Set default hold out data to 20%
-        percentage = 0.20
-        # When node number or supplied
-        # if len(args) > 3:
-        #     if args[1] == "h":
-        #         # Set up number of nodes in the hidden layer
-        #         hidden_layer_size = int(args[2])
-        #         if len(args) > 3:
-        #             if args[3] == "p":
-        #                 # Setup hold out percentage
-        #                 percentage = float(args[4])
-        #     elif args[1] == "p":
-        #         # Setup hold out percentage
-        #         percentage = float(args[2])
-
-        # Read data into memory
-        board = parse_file(filename)
-
-        # Train only when there is data
-        print board
-
-        # if (board.any()):
-        # else:
-            # Do nothing when no data supplied
-            # print("No data to train and test the network")
+        input_filename = args[0]
+        output_filename = args[1]
+        # Process file and write output
+        process_file(input_filename, output_filename)
     else:
         # Show usage when not providing enough argument
-        print("Usage: python ann.py <filename> [h <number of hidden nodes> | p <holdout percentage>]")
+        print("Usage: python features.py <input filename> <output filename>")
 
 if __name__ == "__main__":
     main()
