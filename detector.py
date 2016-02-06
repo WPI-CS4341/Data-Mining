@@ -104,7 +104,8 @@ class Detector(object):
             'leftCornerPlayer': self.leftCornerPlayer(),
             'centerPlayer': self.centerPlayer(),
             'diffMoves': self.diffMoves(),
-            'blockableMoves': self.blockableMoves()
+            'blockableMoves': self.blockableMoves(),
+            'winReach': self.winReach()
         }
 
     """
@@ -158,3 +159,8 @@ class Detector(object):
                                self.__horizontalBlockCount(player)
                                )
         return np.sum(total_moves)
+    """
+    Returns a value representing how far away a board is from being won (the higher the number, the closer it is)
+    """
+    def winReach(self):
+        return self.diffMoves() - self.blockableMoves()
