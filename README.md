@@ -52,10 +52,11 @@ Harry
 -----
 
 - [x] **Due Friday, 01/05/2016:** Familiarize self with Weka and how to proceed with network/data processing components of assignment.
-- [ ] **Due Saturday, 01/06/2016** Finish all the videos and instructions of Weka
+- [ ] **Due Saturday, 01/06/2016:** Finish all the videos and instructions of Weka
+- [ ] **Due Sunday, 01/07/2016:** Use feature detector to generate model files
 
 Tyler
 -----
 
-- [x] **Due Thursday, 01/04/2016:** Email professor regarding project questions.
-- [ ] **Due Friday, 01/05/2016:** Write feature-detection.
+- [x] **Due Friday, 01/05/2016:** Write feature-detection.
+- [ ] **Due Saturday, 01/06/2016:** Start writing report
