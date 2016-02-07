@@ -158,7 +158,7 @@ class Detector(object):
                                self.__verticalBlockCount(player) +
                                self.__horizontalBlockCount(player)
                                )
-        return np.sum(total_moves)
+        return np.amax(total_moves) - np.amin(total_moves)
     """
     Returns a value representing how far away a board is from being won (the higher the number, the closer it is)
     """
