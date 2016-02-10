@@ -70,7 +70,15 @@ Similar to blockableMoves, bestMoves also helps to define the quality of the pla
 ### WEKA procedures
 ### Cross validation performance
 
-## Why do we choose cross validation for training?
+## Why do we need cross validation?
+  Cross validation is way to estimate out of sample error rate of our models. We break data into training data set and testing data set and even validation data set.
+
+  The first goal of performing cross validation is to **prevent from overfitting**. Overfitting occurs when the model describes random errors and noises instead of representing underlying relationship, causing our model to have poor predictive performance.
+
+  The second goal is to making sure our model will **generalize well** on future predictions. Cross validation helps us to select the best model among our hypothesis space by calculating average validation error rate and filtering out the one minimizing them.
+
+## What cross validation we performed?
+We choose k-fold cross validation algorithm as default. Compared with holdout cross validation, k-fold algorithm ensures maximize data utilization. It spilt data into k equal subset and performs k round of train meaning while holding out 1 of data set out as test set and taking remaining data as training data sets. Holding out cross validation holds part of data out as training set, failing to utilize available data, and leads to poor hypothesis.
 
 # Result
 ### How did we figure out which feature is important?
