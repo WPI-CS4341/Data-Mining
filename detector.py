@@ -103,7 +103,7 @@ class Detector(object):
     def allFeatures(self):
         return {
             'leftCornerPlayer': self.leftCornerPlayer(),
-            'centerPlayer': self.centerPlayer(),
+            'centerPlayer': self.centerMoves(),
             'openMoves': self.openMoves(),
             'openSequences': self.openSequences(),
             'unblockableMoves': self.unblockableMoves()
@@ -123,7 +123,7 @@ class Detector(object):
     Returns 0 if neither player is in the center of the board
     """
 
-    def centerPlayer(self):
+    def centerMoves(self):
         player1_count = 0
         player2_count = 0
         for row in self.board:
@@ -133,7 +133,7 @@ class Detector(object):
                     player1_count += 1
                 elif cell == PLAYER_2:
                     player2_count += 1
-        return player1_count - player2_count
+        return player1_count - player2_countc
 
     """
     Returns the the difference in open moves between players
