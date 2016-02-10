@@ -105,7 +105,7 @@ class Detector(object):
             'centerPlayer': self.centerPlayer(),
             'diffMoves': self.diffMoves(),
             'blockableMoves': self.blockableMoves(),
-            'winReach': self.winReach()
+            'winReach': self.bestMoves()
         }
 
     """
@@ -162,5 +162,5 @@ class Detector(object):
     """
     Returns a value representing how far away a board is from being won (the higher the number, the closer it is)
     """
-    def winReach(self):
+    def bestMoves(self):
         return self.diffMoves() - self.blockableMoves()
