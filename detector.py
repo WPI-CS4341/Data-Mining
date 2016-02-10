@@ -133,7 +133,7 @@ class Detector(object):
                     player1_count += 1
                 elif cell == PLAYER_2:
                     player2_count += 1
-        return player1_count - player2_countc
+        return player1_count - player2_count
 
     """
     Returns the the difference in open moves between players
