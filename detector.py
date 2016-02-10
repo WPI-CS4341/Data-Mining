@@ -184,8 +184,10 @@ class Detector(object):
         return total_moves[0] - total_moves[1]
 
     """
-    Returns a value representing how far away a board is from being won (the higher the number, the closer it is)
+    Returns a value representing the difference in moves that cannot be blocked
+    If the value is positive, player 1 is in the lead
+    If the value is negative, player 2 is in the lead
     """
 
     def unblockableMoves(self):
-        return self.openMoves - self.openSequences
+        return self.openMoves() - self.openSequences()
