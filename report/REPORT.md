@@ -32,7 +32,7 @@ Returns the difference in "blockable" moves between players (i.e. sequences of c
 
 ```
 function blockableMoves
-    for PLAYER1, PLAÂYER2 as player
+    for PLAYER1, PLAYER2 as player
         playerCount.add(horizontalBlockCount(player))
         playerCount.add(verticalBlockCount(player))
         playerCount.add(diagonalsBlockCount(player))
