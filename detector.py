@@ -12,25 +12,6 @@ class Detector(object):
 
     # PRIVATE METHODS
 
-    def __checkForConnect(self, cells, player):
-        is_connect = False
-        for i in xrange(0, len(cells) - 1):
-            if i != len(cells) - 1:
-                if cells[i] == player and cells[i + 1] == player:
-                    if (i != 0 and cells[i - 1] == EMPTY_CELL) or \
-                       (i + 2 < len(cells) - 1 and cells[i + 2] == EMPTY_CELL):
-                        is_connect = True
-        return is_connect
-
-    def __checkForBlockable(self, cells, player):
-        is_blockable = False
-        for i in xrange(0, len(cells) - 1):
-            if i != len(cells) - 1:
-                if cells[i] == player and cells[i + 1] == 0:
-                    if (i + 2 < len(cells) - 1 and cells[i + 2] == player):
-                        is_blockable = True
-        return is_blockable
-
     def __horizontalMoveCount(self, player):
         player_moves = 0
         # For each row on the board
@@ -152,7 +133,7 @@ class Detector(object):
                     player1_count += 1
                 elif cell == PLAYER_2:
                     player2_count += 1
-        return PLAYER_1 if player1_count > player2_count else PLAYER_2
+        return player1_count - player2_count
 
     """
     Returns the the difference in open moves between players
