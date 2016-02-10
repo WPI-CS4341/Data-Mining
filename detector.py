@@ -125,7 +125,7 @@ class Detector(object):
             'centerPlayer': self.centerPlayer(),
             'openMoves': self.openMoves(),
             'openSequences': self.openSequences(),
-            'winReach': self.predictedWinner()
+            'unblockableMoves': self.unblockableMoves()
         }
 
     """
@@ -156,8 +156,8 @@ class Detector(object):
 
     """
     Returns the the difference in open moves between players
-    If the value is negative, player 1 is in the lead
-    If the value is positive, player 2 is in the lead
+    If the value is positive, player 1 is in the lead
+    If the value is negative, player 2 is in the lead
     """
 
     def openMoves(self):
@@ -167,13 +167,13 @@ class Detector(object):
             player_horizontal_moves = self.__horizontalMoveCount(player)
             player_vertical_moves = self.__verticalMoveCount(player)
             total_moves.append(player_vertical_moves)
-        return total_moves[1] - total_moves[0]
+        return total_moves[0] - total_moves[1]
 
     """
     Returns the difference in open sequences (sequences
     that have gaps in the middle) between players
-    If the value is negative, player 1 is in the lead
-    If the value is positive, player 2 is in the lead
+    If the value is positive, player 1 is in the lead
+    If the value is negative, player 2 is in the lead
     """
 
     def openSequences(self):
@@ -181,11 +181,11 @@ class Detector(object):
 
         for player in [PLAYER_1, PLAYER_2]:
             total_moves.append(self.__horizontalSequenceCount(player))
-        return total_moves[1] - total_moves[0]
+        return total_moves[0] - total_moves[1]
 
     """
     Returns a value representing how far away a board is from being won (the higher the number, the closer it is)
     """
 
-    def predictedWinner(self):
-        return 0
+    def unblockableMoves(self):
+        return self.openMoves - self.openSequences
