@@ -59,4 +59,6 @@ Tyler
 -----
 
 - [x] **Due Friday, 01/05/2016:** Write feature-detection.
-- [ ] **Due Saturday, 01/06/2016:** Start writing report
+- [x] **Due Wednesday, 01/09/2016:** Start writing report
+- [ ] **Due Wednesday, 01/09/2016:** Group parse_file and main function into separate, callable function
+- [ ] **Due Wednesday, 01/09/2016:** Comment code
