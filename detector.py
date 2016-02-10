@@ -33,68 +33,88 @@ class Detector(object):
 
     def __horizontalMoveCount(self, player):
         player_moves = 0
-        for row in self.board:
-            if self.__checkForConnect(row, player):
-                player_moves += 1
+        # For each row on the board
+        for y in xrange(len(self.board)):
+            x = 0
+            is_connect = False
+            checker_count = 0
+            row = self.board[y]
+            # Iterate through the cells
+            while x < len(row):
+                # If we are not at the bottom of the board and there is no
+                # supporting cell beneath this one...
+                if y != len(self.board) - 1 and self.board[y + 1][x] == EMPTY_CELL:
+                    # ...skip it
+                    x += 1
+                else:
+                    # Increment count for every player checker we find
+                    if row[x] == player:
+                        checker_count += 1
+                    elif row[x] == EMPTY_CELL:
+                        if checker_count > 1:
+                            player_moves += 1
+                        checker_count = 0
+                    else:
+                        checker_count = 0
+
+                    if x == len(row) - 1:
+                        if checker_count > 1 and \
+                            x - (checker_count + 1) >= 0 and \
+                                row[x - (checker_count + 1)] == EMPTY_CELL:
+                                player_moves += 1
+                                checker_count = 0
+
+                    x += 1
         return player_moves
 
     def __verticalMoveCount(self, player):
         player_moves = 0
-        for row in self.board.T:
-            if self.__checkForConnect(row, player):
-                player_moves += 1
+        # Transpose and flip the board matrix for iteration
+        for row in np.fliplr(self.board.T):
+            checker_count = 0
+            for i in xrange(len(row)):
+                if row[i] == player:
+                    checker_count += 1
+                elif row[i] == EMPTY_CELL:
+                    if checker_count > 1:
+                        player_moves += 1
+                    checker_count = 0
+                else:
+                    checker_count = 0
+                if i == len(row) - 1:
+                    if checker_count > 1:
+                        player_moves += 1
+                        checker_count = 0
         return player_moves
 
-    def __diagonalMoveCount(self, player, reverse=False):
-        board = np.flipud(self.board) if reverse else self.board
-        i = 0
-        main_diagonal = np.diag(board)
+    def __horizontalSequenceCount(self, player):
         player_moves = 0
-
-        while(len(main_diagonal) != 0):
-            diag_a = np.diag(board, i)
-            diag_b = np.diag(board, -i)
-
-            if self.__checkForConnect(diag_a, player) or \
-               self.__checkForConnect(diag_b, player):
+        # For each row on the board
+        for y in xrange(len(self.board)):
+            x = 0
+            is_sequence = False
+            row = self.board[y]
+            # Iterate through the cells
+            while x < len(row):
+                # If we're not on the bottom row and there is no supporting
+                # cell beneath this one...
+                if y != len(self.board) - 1 and self.board[y + 1][x] == EMPTY_CELL:
+                    # ...we skip it
+                    x += 1
+                else:
+                    # If we're not at the board's edge...
+                    if x != len(row) - 1:
+                        # ...and an empty cell comes after the current one...
+                        if (row[x] == player and row[x + 1] == EMPTY_CELL):
+                            # ...and the cell after the empty cell has the current player's checker...
+                            if (x + 2 <= len(row) - 1 and row[x + 2] == player):
+                                # ...it is a sequence
+                                is_sequence = True
+                x += 1
+            # If there is a sequence...
+            if is_sequence:
+                # ...increment the move counter
                 player_moves += 1
-
-            i += 1
-            main_diagonal = np.diag(board, i)
-
-        return player_moves
-
-    def __horizontalBlockCount(self, player):
-        player_moves = 0
-        for row in self.board:
-            if self.__checkForBlockable(row, player):
-                player_moves += 1
-        return player_moves
-
-    def __verticalBlockCount(self, player):
-        player_moves = 0
-        for row in self.board.T:
-            if self.__checkForBlockable(row, player):
-                player_moves += 1
-        return player_moves
-
-    def __diagonalBlockCount(self, player, reverse=False):
-        board = np.flipud(self.board) if reverse else self.board
-        i = 0
-        main_diagonal = np.diag(board)
-        player_moves = 0
-
-        while(len(main_diagonal) != 0):
-            diag_a = np.diag(board, i)
-            diag_b = np.diag(board, -i)
-
-            if self.__checkForBlockable(diag_a, player) or \
-               self.__checkForBlockable(diag_b, player):
-                player_moves += 1
-
-            i += 1
-            main_diagonal = np.diag(board, i)
-
         return player_moves
 
     # PUBLIC METHODS
@@ -103,15 +123,16 @@ class Detector(object):
         return {
             'leftCornerPlayer': self.leftCornerPlayer(),
             'centerPlayer': self.centerPlayer(),
-            'diffMoves': self.diffMoves(),
-            'blockableMoves': self.blockableMoves(),
-            'winReach': self.bestMoves()
+            'openMoves': self.openMoves(),
+            'openSequences': self.openSequences(),
+            'winReach': self.predictedWinner()
         }
 
     """
     Returns the player in the lefthand corner of the board
     Returns 0 if there is no player there
     """
+
     def leftCornerPlayer(self):
         return self.board[len(self.board) - 1][0]
 
@@ -120,6 +141,7 @@ class Detector(object):
     (i.e. not on the left or right edges)
     Returns 0 if neither player is in the center of the board
     """
+
     def centerPlayer(self):
         player1_count = 0
         player2_count = 0
@@ -133,34 +155,37 @@ class Detector(object):
         return PLAYER_1 if player1_count > player2_count else PLAYER_2
 
     """
-    Returns the difference in moves between the two players
+    Returns the the difference in open moves between players
+    If the value is negative, player 1 is in the lead
+    If the value is positive, player 2 is in the lead
     """
-    def diffMoves(self):
+
+    def openMoves(self):
         total_moves = []
 
         for player in [PLAYER_1, PLAYER_2]:
-            player_diagonal_moves = self.__diagonalMoveCount(player) + self.__diagonalMoveCount(player, True)
             player_horizontal_moves = self.__horizontalMoveCount(player)
             player_vertical_moves = self.__verticalMoveCount(player)
-            total_moves.append(player_diagonal_moves + player_horizontal_moves + player_vertical_moves)
-
-        return np.amax(total_moves) - np.amin(total_moves)
+            total_moves.append(player_vertical_moves)
+        return total_moves[1] - total_moves[0]
 
     """
-    Returns number of moves which have the potential to be blocked (have an open end)
+    Returns the difference in open sequences (sequences
+    that have gaps in the middle) between players
+    If the value is negative, player 1 is in the lead
+    If the value is positive, player 2 is in the lead
     """
-    def blockableMoves(self):
+
+    def openSequences(self):
         total_moves = []
 
         for player in [PLAYER_1, PLAYER_2]:
-            total_moves.append(self.__diagonalBlockCount(player) +
-                               self.__diagonalBlockCount(player, True) +
-                               self.__verticalBlockCount(player) +
-                               self.__horizontalBlockCount(player)
-                               )
-        return np.amax(total_moves) - np.amin(total_moves)
+            total_moves.append(self.__horizontalSequenceCount(player))
+        return total_moves[1] - total_moves[0]
+
     """
     Returns a value representing how far away a board is from being won (the higher the number, the closer it is)
     """
-    def bestMoves(self):
-        return self.diffMoves() - self.blockableMoves()
+
+    def predictedWinner(self):
+        return 0
