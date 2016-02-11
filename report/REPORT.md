@@ -63,13 +63,13 @@
 
 Prior to building a decision tree from our features, feature selection was run in Weka in order to filter out irrelevant features that would not hold a large influence over the outcome of the tree. We used the J48 (decision tree) classifier to achieve this, obtaining the following results:
 
-attribute            | number of folds (%)
--------------------: | ------------------:
-    **centerPlayer** |       **10(100 %)**
-~~unblockableMoves~~ |        ~~2( 20 %)~~
-**leftCornerPlayer** |       **10(100 %)**
-   ~~openSequences~~ |        ~~3( 30 %)~~
-       **openMoves** |        **7( 70 %)**
+|            attribute | number of folds (%) |
+|---------------------:|--------------------:|
+|     **centerPlayer** |       **10(100 %)** |
+| ~~unblockableMoves~~ |        ~~2( 20 %)~~ |
+| **leftCornerPlayer** |       **10(100 %)** |
+|    ~~openSequences~~ |        ~~3( 30 %)~~ |
+|        **openMoves** |        **7( 70 %)** |
 
 By constructing a decision tree in Weka using the Connect-4 features, we were able to draw conclusions regarding the effectiveness of these features in such a tree. Our best case tree resulted in the following, consisting of a tree size (node count) of eleven with a total of six leaves:
 
@@ -90,15 +90,15 @@ With the corresponding Weka output:
   centerPlayer > -1: 1 (750.0/133.0)
 ```
 
-Given these results, we were able to conclude that the centerPlayer, leftCornerPlayer, and openMoves features had the greatest influence on the winner of the game. Although centerPlayer and openMoves seemed like fair estimates as to how the game might be going, it was very surprising to find that leftCornerPlayer, although deemed significant during feature selection, held very little influence over the tree produced. leftCornerPlayer, in reality,
+Given these results, we were able to conclude that the centerPlayer, leftCornerPlayer, and openMoves features had the greatest influence on the winner of the game. Although centerPlayer(correct 750.0 / incorrect 133.0) and openMoves(correct 191.0 / incorrect 87.0) seemed like fair estimates as to how the game might be going, it was very surprising to find that leftCornerPlayer, although deemed significant during feature selection, held very little influence over the tree produced. leftCornerPlayer (correct 45.0 / incorrect 13.0), in reality, split the least data out in the tree. In another word, it has the smallest information gain for the result and considered almost irrelevant.
 
 ### WEKA procedures
 ### Cross validation performance
 
-                                 | Number Of Instances | Rate
--------------------------------: | ------------------: | ----
-Correctly Classified Instances   |                 720 | 72%
-Incorrectly Classified Instances |                 280 | 28%
+|              Number Of Instances | Rate |     |
+|---------------------------------:|-----:|:----|
+|   Correctly Classified Instances |  720 | 72% |
+| Incorrectly Classified Instances |  280 | 28% |
 
 ```
 Twenty eight percent of error rate seems tolerable to our decision tree model.
@@ -112,24 +112,24 @@ Twenty eight percent of error rate seems tolerable to our decision tree model.
 
 Similar to the decision tree model, feature selection was once again run in preparation for running the features through the neural network.
 
-attribute            | number of folds (%)
--------------------: | ------------------:
-    **centerPlayer** |       **50(100 %)**
-**unblockableMoves** |       **30( 60 %)**
-**leftCornerPlayer** |       **50(100 %)**
-   ~~openSequences~~ |       ~~22( 44 %)~~
-       **openMoves** |       **47( 94 %)**
+|            attribute | number of folds (%) |
+|---------------------:|--------------------:|
+|     **centerPlayer** |       **50(100 %)** |
+| **unblockableMoves** |       **30( 60 %)** |
+| **leftCornerPlayer** |       **50(100 %)** |
+|    ~~openSequences~~ |       ~~22( 44 %)~~ |
+|        **openMoves** |       **47( 94 %)** |
 
   For neural network, all attributes seems have great impact on the game result except "openSequences".
 
 ### WEKA procedures
 ### Cross validation performance
 
-```
-                             | Number instances | Rate
-```
 
--------------------------------: | ---------------: | ----:   Correctly Classified Instances |              758 | 75.8% Incorrectly Classified Instances |              242 | 24.2%
+|                                  | Number instances |  Rate |
+|---------------------------------:|-----------------:|------:|
+|   Correctly Classified Instances |              758 | 75.8% |
+| Incorrectly Classified Instances |              242 | 24.2% |
 
   Twenty four percent of error rate seems tolerable to our neural network model.
 
@@ -250,7 +250,7 @@ attribute            | number of folds (%)
 
 ## Findings
 ### Decision tree
-  The data shows that "centerPlayer" contributes the most to game winning since it splits out the most amount data records decisively (around 750 records). It is reasonable to think that checkers located near the center of the board have more opportunities to from sequences in row and in diagonal than near the edge or the corners. Also "openMoves", (successfully classified around 150 records), leads to part of the game result due to the player who have more open move, also have more opportunities left to connect his checkers together. Feature "leftCornerPlayer" seems have "no much effect" on the game results since it categorized only few results in the tree and actually have no reason to much influence.
+  The data shows that "centerPlayer" contributes the most to game winning since it splits out the most amount data records correctly (around 750 records). It is reasonable to think that checkers located near the center of the board have more opportunities to from sequences in row and in diagonal than near the edge or the corners. Also "openMoves", (successfully classified around 150 records), leads to part of the game result due to the player who have more open move, also have more opportunities left to connect his checkers together. Feature "leftCornerPlayer" seems have "no much effect" on the game results since it categorized only few results in the tree and actually have no reason to much influence.
 
 ### Neural Network
   The network results showed also confirm our findings by showing that "centerPlayer" (range form -0 to 13) features the most considerable average weights. And the "openMoves" (range from 0 to 10), also contributes some exceptionally high weight to the game results.
