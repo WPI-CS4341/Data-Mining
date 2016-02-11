@@ -12,6 +12,10 @@ class Detector(object):
 
     # PRIVATE METHODS
 
+    """
+    Counts the number of horizontal "open" moves on the board
+    """
+
     def __horizontalMoveCount(self, player):
         player_moves = 0
         # For each row on the board
@@ -28,45 +32,64 @@ class Detector(object):
                     # ...skip it
                     x += 1
                 else:
-                    # Increment count for every player checker we find
+                    # Increment checker count for every player checker we find
                     if row[x] == player:
                         checker_count += 1
                     elif row[x] == EMPTY_CELL:
+                        # Increment move count when we hit an empty cell and
+                        # have a checker sequence
                         if checker_count > 1:
                             player_moves += 1
                         checker_count = 0
                     else:
                         checker_count = 0
 
+                    # If we're at the edge of the board, check to see if the
+                    # end of the sequence is open
                     if x == len(row) - 1:
                         if checker_count > 1 and \
                             x - (checker_count + 1) >= 0 and \
                                 row[x - (checker_count + 1)] == EMPTY_CELL:
-                                player_moves += 1
-                                checker_count = 0
+                            player_moves += 1
+                            checker_count = 0
 
                     x += 1
         return player_moves
+
+    """
+    Counts the number of verticla "open" moves on the board
+    """
 
     def __verticalMoveCount(self, player):
         player_moves = 0
         # Transpose and flip the board matrix for iteration
         for row in np.fliplr(self.board.T):
             checker_count = 0
+            # For every row
             for i in xrange(len(row)):
+                # Increment checker count for every player checker we find
                 if row[i] == player:
                     checker_count += 1
                 elif row[i] == EMPTY_CELL:
+                    # Increment move count when we hit an empty cell and have a
+                    # checker sequence
                     if checker_count > 1:
                         player_moves += 1
                     checker_count = 0
                 else:
                     checker_count = 0
+                # If we have reached the edge of the board
                 if i == len(row) - 1:
+                    # We can't have an empty cell at the other end (because it's vertical),
+                    # so just increment if we have a checker sequence going on
                     if checker_count > 1:
                         player_moves += 1
                         checker_count = 0
         return player_moves
+
+    """
+    Counts the number of horizontal "open" sequences on the board
+    """
 
     def __horizontalSequenceCount(self, player):
         player_moves = 0
@@ -99,6 +122,10 @@ class Detector(object):
         return player_moves
 
     # PUBLIC METHODS
+
+    """
+    Returns a dictionary of all feature attributes
+    """
 
     def allFeatures(self):
         return {
