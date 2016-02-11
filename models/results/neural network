@@ -1,0 +1,146 @@
+=== Run information ===
+
+Scheme:weka.classifiers.functions.MultilayerPerceptron -L 0.3 -M 0.2 -N 500 -V 0 -S 0 -E 20 -H 10 -G -R
+Relation:     output-weka.filters.unsupervised.attribute.Remove-R1-42,47-weka.filters.unsupervised.attribute.NumericToNominal-Rfirst
+Instances:    1000
+Attributes:   5
+              winner
+              centerPlayer
+              unblockableMoves
+              leftCornerPlayer
+              openMoves
+Test mode:100-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+Sigmoid Node 0
+    Inputs    Weights
+    Threshold    -0.28621153737967514
+    Node 2    0.05923524956772622
+    Node 3    1.1515354178548236
+    Node 4    0.8103312237913829
+    Node 5    0.7377636915389297
+    Node 6    0.9529730773243038
+    Node 7    2.69516054285918
+    Node 8    0.8169114430570755
+    Node 9    1.1170517562985691
+    Node 10    1.093483265705679
+    Node 11    1.8690038088520764
+Sigmoid Node 1
+    Inputs    Weights
+    Threshold    0.2859213531505996
+    Node 2    -0.0607989008512651
+    Node 3    -1.1528831289819796
+    Node 4    -0.795013426217962
+    Node 5    -0.7703251441456931
+    Node 6    -0.9574643554892507
+    Node 7    -2.695830231045731
+    Node 8    -0.7957298380994041
+    Node 9    -1.056890675529909
+    Node 10    -1.1543047426259694
+    Node 11    -1.8689713029377724
+Sigmoid Node 2
+    Inputs    Weights
+    Threshold    -3.239000568935438
+    Attrib centerPlayer    0.5869395377671233
+    Attrib unblockableMoves    1.1507246836341918
+    Attrib leftCornerPlayer    -0.2590241558683983
+    Attrib openMoves    -0.2978709707146848
+Sigmoid Node 3
+    Inputs    Weights
+    Threshold    -3.8679905008802287
+    Attrib centerPlayer    3.0122096599058112
+    Attrib unblockableMoves    -2.1025690321848636
+    Attrib leftCornerPlayer    -0.5943666858371563
+    Attrib openMoves    -0.29784038651620903
+Sigmoid Node 4
+    Inputs    Weights
+    Threshold    -3.2766582415698675
+    Attrib centerPlayer    2.0354331767260305
+    Attrib unblockableMoves    -1.8315692191141846
+    Attrib leftCornerPlayer    -0.5156113861535958
+    Attrib openMoves    1.111401588572593
+Sigmoid Node 5
+    Inputs    Weights
+    Threshold    -3.4533480448725595
+    Attrib centerPlayer    1.6466999344183297
+    Attrib unblockableMoves    -1.692302705966911
+    Attrib leftCornerPlayer    -0.7106753913782027
+    Attrib openMoves    0.8907941137171633
+Sigmoid Node 6
+    Inputs    Weights
+    Threshold    -3.1418359052429374
+    Attrib centerPlayer    3.426043005922332
+    Attrib unblockableMoves    -1.8577064815708773
+    Attrib leftCornerPlayer    -0.2792769885531882
+    Attrib openMoves    0.591610555800771
+Sigmoid Node 7
+    Inputs    Weights
+    Threshold    -0.7322181696150007
+    Attrib centerPlayer    13.198092180925178
+    Attrib unblockableMoves    -3.951788572544002
+    Attrib leftCornerPlayer    4.369315618169003
+    Attrib openMoves    10.652129896768445
+Sigmoid Node 8
+    Inputs    Weights
+    Threshold    -2.884756691361181
+    Attrib centerPlayer    1.7024269111815107
+    Attrib unblockableMoves    -0.5997936331706902
+    Attrib leftCornerPlayer    -0.3920971226853196
+    Attrib openMoves    -0.2312365799448576
+Sigmoid Node 9
+    Inputs    Weights
+    Threshold    -3.599053198731778
+    Attrib centerPlayer    2.976537914097033
+    Attrib unblockableMoves    -1.9605150932284536
+    Attrib leftCornerPlayer    -0.5166991526017269
+    Attrib openMoves    -0.07745062362020148
+Sigmoid Node 10
+    Inputs    Weights
+    Threshold    -3.762172006929382
+    Attrib centerPlayer    2.9155071872336213
+    Attrib unblockableMoves    -1.9369936964350651
+    Attrib leftCornerPlayer    -0.5796408643781243
+    Attrib openMoves    -0.3566367251646009
+Sigmoid Node 11
+    Inputs    Weights
+    Threshold    -5.843603142764188
+    Attrib centerPlayer    2.485687525965516
+    Attrib unblockableMoves    -3.640710955866215
+    Attrib leftCornerPlayer    -7.388066813067393
+    Attrib openMoves    9.41344858194025
+Class 1
+    Input
+    Node 0
+Class 2
+    Input
+    Node 1
+
+
+Time taken to build model: 21.88 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         758               75.8    %
+Incorrectly Classified Instances       242               24.2    %
+Kappa statistic                          0.3173
+Mean absolute error                      0.3086
+Root mean squared error                  0.4044
+Relative absolute error                 79.5483 %
+Root relative squared error             91.8326 %
+Total Number of Instances             1000     
+
+=== Detailed Accuracy By Class ===
+
+               TP Rate   FP Rate   Precision   Recall  F-Measure   ROC Area  Class
+                 0.883     0.593      0.807     0.883     0.843      0.751    1
+                 0.407     0.117      0.554     0.407     0.469      0.751    2
+Weighted Avg.    0.758     0.468      0.74      0.758     0.745      0.751
+
+=== Confusion Matrix ===
+
+   a   b   <-- classified as
+ 651  86 |   a = 1
+ 156 107 |   b = 2
+

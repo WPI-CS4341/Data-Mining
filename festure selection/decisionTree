@@ -1,0 +1,26 @@
+=== Run information ===
+
+Evaluator:    weka.attributeSelection.ClassifierSubsetEval -B weka.classifiers.trees.J48 -T -H "Click to set hold out or test instances" -- -C 0.25 -M 2
+Search:weka.attributeSelection.BestFirst -D 1 -N 5
+Relation:     output-weka.filters.unsupervised.attribute.Remove-R1-42-weka.filters.unsupervised.attribute.NumericToNominal-Rfirst
+Instances:    1000
+Attributes:   6
+              winner
+              centerPlayer
+              unblockableMoves
+              leftCornerPlayer
+              openSequences
+              openMoves
+Evaluation mode:10-fold cross-validation
+
+
+
+=== Attribute selection 10 fold cross-validation (stratified), seed: 1 ===
+
+number of folds (%)  attribute
+          10(100 %)   2 centerPlayer
+           2( 20 %)   3 unblockableMoves
+          10(100 %)   4 leftCornerPlayer
+           3( 30 %)   5 openSequences
+           7( 70 %)   6 openMoves
+
