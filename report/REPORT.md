@@ -11,69 +11,55 @@ As previously stated, each string (line) of input data is interpreted as a Conne
 Returns the number of whichever player is in the left-hand corner of the board. While not entirely useful, this feature acts primarily as a benchmark and does not have a significant impact on the rest of the features.
 
 #### Strategy
+This feature was chosen as a benchmark to measure how a poor feature would perform during Weka testing.
 
 ### centerPlayer
 #### Description
-Returns the number of the player with the most checkers in the center of the board (no checkers along the left or right edges). This feature is somewhat useful in deducting who has control of the board.
+Returns the difference in the number of checkers by each player in the center of the board (no checkers along the left or right edges). If the value is positive, player1 has more tiles in the center. If the value is negative, player2 has more tiles.
 
 #### Strategy
+This feature was to chosen in order to provide insight as to which player currently has control of the board.
 
-### diffMoves
+### openMoves <a id="openm"></a>
 #### Description
-Returns the difference in "open" moves between players, "open" (i.e moves in which another checker may be added to left or right side of the sequence). This feature is useful for deciding how "far ahead" one player is from another player. For example, a higher number would mean that one player has a higher chance of winning, as they have more chances to complete winning moves (or become closer to winning). diffMoves is computed by checking all moves (horizontal, vertical, and diagonal both ways) and counting the strings of same-player checkers that have open spaces on either end. This can be represented by the following pseudocode:
+Returns the difference in "open" moves between players (i.e moves in which another checker may be added to left or right side of the sequence). If the value returned is *positive*, then player one has made more "open" moves than player two. If the value is *negative*, then the opposite is true. The larger the absolute value of the returned integer, the greater the difference in moves. openMoves is computed by checking all horizontal and vertical moves and counting the strings of same-player checkers that have open spaces on either end. The returned value is the player two count subtracted from the player one count.
 
-```
-function diffMoves
-    for PLAYER1, PLAYER2 as player
-        playerCount.add(horizontalCount(player))
-        playerCount.add(verticalCount(player))
-        playerCount.add(diagonalsCount(player))
-        count.add(playerCount)
-    difference = max(count) - min(count)
-    return difference
-end
-```
 #### Strategy
+This feature was chosen in order to measure player strategy. A higher absolute value for openMoves suggests that the player is able to freely make open moves without their opponent blocking them. As a result, this feature measures more of the opponent's strategy than the strategy of the player at hand. This is unlike [unblockableMoves](#unblockableMoves), which measures how strategic the current player is making "un-blockable" moves.
 
-### blockableMoves
+### openSequences <a id="opens"></a>
 #### Description
-Returns the difference in "blockable" moves between players (i.e. sequences of checkers with gaps in the middle, allowing moves to be blocked). This feature signifies the quality of plays one user is making. If the difference is higher, then we know one player has been making several moves which are not optimal, as they can be easily blocked by the opponent. blockableMoves is calculated by checking all moves (horizontal, vertical, and diagonal both ways), and seeing if there are gaps in any of the move sequences. This can be represented by the following pseudocode:
+Returns the difference in "open" checker sequences between players (i.e. sequences of checkers with gaps in the middle, allowing moves to be blocked). Similar to openMoves, player 1 has more "open" sequences on the board than player 2 if the difference is positive. The opposite holds true if the returned difference is negative. openSequences is calculated by checking all horizontal and vertical moves and seeing if there are gaps in any of the move sequences. In other words, every open space is analyzed using the following criteria:
 
-```
-function blockableMoves
-    for PLAYER1, PLAYER2 as player
-        playerCount.add(horizontalBlockCount(player))
-        playerCount.add(verticalBlockCount(player))
-        playerCount.add(diagonalsBlockCount(player))
-        count.add(playerCount)
-    difference = max(count) - min(count)
-    return difference
-end
-```
+* Is there "ground" below the space for a player to make a move (i.e. another checker or the bottom of the board)?
+
+* Are the checkers to the left and right of the space are both of the same player?
+
+If both of the above questions answer yes, then the sequence is "open". The count for player two is then subtracted from the count for player one and the difference is returned.
+
 #### Strategy
+This feature was chosen in order to again measure the strategy of the players. However, unlike [openMoves](#openm), which measures the opponent's basic ability to block moves, openSequences measures the opponent's ability in blocking moves which consist of two parts (a "front" and a "back"). This is representative of their ability to see the "big picture", so-to-speak, instead of blocking moves in a very quick, almost reflex-based fashion. If the difference is lower, than the opponent has a fairly good blocking strategy. If it is lower, it does not.
 
-### bestMoves
+### unblockableMoves <a id="unblockable"></a>
 #### Description
-Similar to blockableMoves, bestMoves also helps to define the quality of the plays the leading player is making. However, unlike blockableMoves, where a high value meant a number of low-quality, "blockable" moves, bestMoves does the opposite. bestMoves subtracts blockableMoves from diffMoves to define the difference in optimal moves. This provides a more accurate prediction of how close the game is to ending, as a higher value means one player has made more non-blockable moves, and has a higher chance of winning the game. This feature is provided as an improvement over diffMoves. However, diffMoves is still valuable, as it signifies who has made more valid moves in a single game. This in turn can be used to determine if someone is in the lead or not.
+Returns an integer denoting which player has more valid moves that cannot be easily blocked due to an "open" sequence. This is achieved by simply subtracting openSequences from openMoves. If the integer is positive, then player one has more "un-blockable" moves. If the integer is negative, then player two has more. The term "blockable" here is very specific, referring only to sequences which can be blocked by inserting a tile somewhere in the middle of it.
 
 #### Strategy
+This feature was chosen to determine whether moves that could be easily completed/blocked by placing checkers in the center of them perform better or worse than moves which can only be completed/blocked by placing checkers on either end.
 
-# Feature selection
+# Training With Features
 
-# Training
-
-## Decision Tree
+## Features as a Decision Tree
 ### WEKA procedures
 ### Cross validation performance
 
 ## Neural Network
 ### WEKA procedures
-### Cross validation performance
+### Cross Validation
 
-## Why do we need cross validation?
-  Cross validation is way to estimate out of sample error rate of our models. We break data into training data set and testing data set and even validation data set.
+  Cross validation is way to estimate the sample error rate of data models. This is done by breaking example data into both training sets and testing sets (also known as *validation sets*).
 
-  The first goal of performing cross validation is to **prevent from overfitting**. Overfitting occurs when the model describes random errors and noises instead of representing underlying relationship, causing our model to have poor predictive performance.
+  Cross-validation helps prevent **overfitting**, a phenomenon where random noise (errors) overpower the actual data of the model, resulting in poor predictive performance.
 
   The second goal is to making sure our model will **generalize well** on future predictions. Cross validation helps us to select the best model among our hypothesis space by calculating average validation error rate and filtering out the one minimizing them.
 
