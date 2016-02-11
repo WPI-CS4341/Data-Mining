@@ -1,0 +1,26 @@
+=== Run information ===
+
+Evaluator:    weka.attributeSelection.ClassifierSubsetEval -B weka.classifiers.functions.MultilayerPerceptron -T -H "Click to set hold out or test instances" -- -L 0.3 -M 0.2 -N 500 -V 0 -S 0 -E 20 -H a
+Search:weka.attributeSelection.BestFirst -D 1 -N 5
+Relation:     output-weka.filters.unsupervised.attribute.Remove-R1-42-weka.filters.unsupervised.attribute.NumericToNominal-Rfirst
+Instances:    1000
+Attributes:   6
+              winner
+              centerPlayer
+              unblockableMoves
+              leftCornerPlayer
+              openSequences
+              openMoves
+Evaluation mode:50-fold cross-validation
+
+
+
+=== Attribute selection 50 fold cross-validation (stratified), seed: 1 ===
+
+number of folds (%)  attribute
+          50(100 %)   2 centerPlayer
+          30( 60 %)   3 unblockableMoves
+          50(100 %)   4 leftCornerPlayer
+          22( 44 %)   5 openSequences
+          47( 94 %)   6 openMoves
+
