@@ -1,86 +1,201 @@
-"""
-Authors: Yang Liu (yliu17), Tyler Nickerson (tjnickerson)
-Date: Jan 28, 2016
-"""
-import csv
-import sys
-import os.path
-
 import numpy as np
-from detector import Detector
 
-DEBUG = 0
-BOARD_HEIGHT = 6
-BOARD_WIDTH = 7
+PLAYER_1 = 1
+PLAYER_2 = 2
+EMPTY_CELL = 0
 
 
-def main():
-    # Read command line arguments
-    args = sys.argv[1:]
-    # More than 1 argument supplied
-    if len(args) > 1:
-        # Get data filename
-        input_filename = args[0]
-        output_filename = args[1]
-        # Read each line of input file and add to the examples and output lists
-        if os.path.isfile(input_filename):
-            feature_headers = []
-            with open(input_filename, 'rb') as csvfile:
-                header = csvfile.readline()
-                output = header
-                reader = csv.reader(csvfile, delimiter=',')
-                for row in reader:
-                    # Initialize empty board matrix
-                    board = []
+class Detector(object):
 
-                    # Get the winner and remove it from the list
-                    winner = row.pop(len(row) - 1)
+    def __init__(self, board):
+        self.board = board
 
-                    # The current row and column
-                    board_column = 0
-                    board_row = []
+    # PRIVATE METHODS
 
-                    # Iterate through the input data
-                    for i in row:
-                        board_row.append(int(i))
-                        # If we've filled a row, move onto the next one
-                        if board_column == BOARD_HEIGHT - 1:
-                            board.append(board_row)
-                            board_column = 0
-                            board_row = []
-                        # Otherwise we push the value into the column
-                        else:
-                            board_column += 1
+    """
+    Counts the number of horizontal "open" moves on the board
+    """
 
-                    # Add board to the collection of boards
-                    board = np.flipud(np.array(board).T)
+    def __horizontalMoveCount(self, player):
+        player_moves = 0
+        # For each row on the board
+        for y in xrange(len(self.board)):
+            x = 0
+            is_connect = False
+            checker_count = 0
+            row = self.board[y]
+            # Iterate through the cells
+            while x < len(row):
+                # If we are not at the bottom of the board and there is no
+                # supporting cell beneath this one...
+                if y != len(self.board) - 1 and self.board[y + 1][x] == EMPTY_CELL:
+                    # ...skip it
+                    x += 1
+                else:
+                    # Increment checker count for every player checker we find
+                    if row[x] == player:
+                        checker_count += 1
+                    elif row[x] == EMPTY_CELL:
+                        # Increment move count when we hit an empty cell and
+                        # have a checker sequence
+                        if checker_count > 1:
+                            player_moves += 1
+                        checker_count = 0
+                    else:
+                        checker_count = 0
 
-                    # Update feature headers (names)
-                    features = Detector(board).allFeatures()
-                    feature_headers = features.keys()
+                    # If we're at the edge of the board, check to see if the
+                    # end of the sequence is open
+                    if x == len(row) - 1:
+                        if checker_count > 1 and \
+                            x - (checker_count + 1) >= 0 and \
+                                row[x - (checker_count + 1)] == EMPTY_CELL:
+                            player_moves += 1
+                            checker_count = 0
 
-                    # Add line to output with feature values appended
-                    output += ','.join(row) + ',' + winner + \
-                              ',' + \
-                        ','.join(map(str, features.values())) + '\n'
+                    x += 1
+        return player_moves
 
-            # Will be used to get the first line of the file
-            first_newline = output.find('\n')
+    """
+    Counts the number of verticla "open" moves on the board
+    """
 
-            # Append new feature titles to header line
-            output = output[:first_newline][:-1] + ',' + \
-                ','.join(feature_headers) + \
-                output[first_newline:]
+    def __verticalMoveCount(self, player):
+        player_moves = 0
+        # Transpose and flip the board matrix for iteration
+        for row in np.fliplr(self.board.T):
+            checker_count = 0
+            # For every row
+            for i in xrange(len(row)):
+                # Increment checker count for every player checker we find
+                if row[i] == player:
+                    checker_count += 1
+                elif row[i] == EMPTY_CELL:
+                    # Increment move count when we hit an empty cell and have a
+                    # checker sequence
+                    if checker_count > 1:
+                        player_moves += 1
+                    checker_count = 0
+                else:
+                    checker_count = 0
+                # If we have reached the edge of the board
+                if i == len(row) - 1:
+                    # We can't have an empty cell at the other end (because it's vertical),
+                    # so just increment if we have a checker sequence going on
+                    if checker_count > 1:
+                        player_moves += 1
+                        checker_count = 0
+        return player_moves
 
-            # Write the output to file
-            with open(output_filename, 'wb') as output_file:
-                output_file.write(output)
-        else:
-            # Throw error when cannot open file
-            print("Input file does not exist.")
-    else:
-        # Show usage when not providing enough argument
-        print("Usage: python features.py <input filename> <output filename>")
+    """
+    Counts the number of horizontal "open" sequences on the board
+    """
 
-if __name__ == "__main__":
-    main()
+    def __horizontalSequenceCount(self, player):
+        player_moves = 0
+        # For each row on the board
+        for y in xrange(len(self.board)):
+            x = 0
+            is_sequence = False
+            row = self.board[y]
+            # Iterate through the cells
+            while x < len(row):
+                # If we're not on the bottom row and there is no supporting
+                # cell beneath this one...
+                if y != len(self.board) - 1 and self.board[y + 1][x] == EMPTY_CELL:
+                    # ...we skip it
+                    x += 1
+                else:
+                    # If we're not at the board's edge...
+                    if x != len(row) - 1:
+                        # ...and an empty cell comes after the current one...
+                        if (row[x] == player and row[x + 1] == EMPTY_CELL):
+                            # ...and the cell after the empty cell has the current player's checker...
+                            if (x + 2 <= len(row) - 1 and row[x + 2] == player):
+                                # ...it is a sequence
+                                is_sequence = True
+                x += 1
+            # If there is a sequence...
+            if is_sequence:
+                # ...increment the move counter
+                player_moves += 1
+        return player_moves
+
+    # PUBLIC METHODS
+
+    """
+    Returns a dictionary of all feature attributes
+    """
+
+    def allFeatures(self):
+        return {
+            'leftCornerPlayer': self.leftCornerPlayer(),
+            'centerPlayer': self.centerMoves(),
+            'openMoves': self.openMoves(),
+            'openSequences': self.openSequences(),
+            'unblockableMoves': self.unblockableMoves()
+        }
+
+    """
+    Returns the player in the lefthand corner of the board
+    Returns 0 if there is no player there
+    """
+
+    def leftCornerPlayer(self):
+        return self.board[len(self.board) - 1][0]
+
+    """
+    Returns the player with the most moves in the center of the board
+    (i.e. not on the left or right edges)
+    Returns 0 if neither player is in the center of the board
+    """
+
+    def centerMoves(self):
+        player1_count = 0
+        player2_count = 0
+        for row in self.board:
+            for column in xrange(1, len(self.board) - 2):
+                cell = row[column]
+                if cell == PLAYER_1:
+                    player1_count += 1
+                elif cell == PLAYER_2:
+                    player2_count += 1
+        return player1_count - player2_count
+
+    """
+    Returns the the difference in open moves between players
+    If the value is positive, player 1 is in the lead
+    If the value is negative, player 2 is in the lead
+    """
+
+    def openMoves(self):
+        total_moves = []
+
+        for player in [PLAYER_1, PLAYER_2]:
+            player_horizontal_moves = self.__horizontalMoveCount(player)
+            player_vertical_moves = self.__verticalMoveCount(player)
+            total_moves.append(player_vertical_moves)
+        return total_moves[0] - total_moves[1]
+
+    """
+    Returns the difference in open sequences (sequences
+    that have gaps in the middle) between players
+    If the value is positive, player 1 is in the lead
+    If the value is negative, player 2 is in the lead
+    """
+
+    def openSequences(self):
+        total_moves = []
+
+        for player in [PLAYER_1, PLAYER_2]:
+            total_moves.append(self.__horizontalSequenceCount(player))
+        return total_moves[0] - total_moves[1]
+
+    """
+    Returns a value representing the difference in moves that cannot be blocked
+    If the value is positive, player 1 is in the lead
+    If the value is negative, player 2 is in the lead
+    """
+
+    def unblockableMoves(self):
+        return self.openMoves() - self.openSequences()
