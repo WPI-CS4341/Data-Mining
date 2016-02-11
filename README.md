@@ -1,6 +1,14 @@
 # Dating Mining Connect-4
 Data mining is a field of computer science covering a range of topics, from artificial intelligence to machine learning to statistical analysis. For this project, we wrote a small program to extract features out of Connect-4 game states for use in decision trees and neural networks, which were generated with the help of [Weka 3](http://www.cs.waikato.ac.nz/ml/weka/). For more on our findings, see [this report](report/REPORT.md) detailing the features we used and how they performed when used in both a decision tree and a neural network. If you're just interested on how you can run this program yourself or how to use its output in Weka, keep on reading!
 
+## Prerequisites
+
+This program runs on the [NumPy](http://www.numpy.org) library, which can be installed by `cd`-ing into the source directory and running:
+
+``` bash
+pip install -r requirements.txt
+```
+
 ## Running The Program
 
 Running the program is extremely simple, as it follows the basic syntax:
